@@ -34,6 +34,8 @@ export class UserService
 
     get user$(): Observable<User>
     {
+        const usuario = JSON.parse(localStorage.getItem('userData')) ?? [];
+        this._user.next(usuario);
         return this._user.asObservable();
     }
 
@@ -66,4 +68,16 @@ export class UserService
             })
         );
     }
+
+    
+    /**
+     * SignOut the user
+     * 
+     */
+     signOut():void
+     {
+        localStorage.removeItem('userData');
+        localStorage.removeItem('accessToken');
+        location.reload();
+     }
 }

@@ -4,7 +4,7 @@ import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { User } from 'app/core/user/user.types';
 import { UserService } from 'app/core/user/user.service';
-import { environment } from '../../../environments/environment.prod'; 
+import { environment } from '../../../environments/environment'; 
 @Injectable()
 export class AuthService
 {
@@ -97,6 +97,7 @@ export class AuthService
 
                 // Store the user on the user service
                 this._userService.user = response;
+                this.userData = response; 
 
                 // Return a new observable with the response
                 return of(response);
@@ -135,8 +136,8 @@ export class AuthService
                 this._authenticated = true;
 
                 // Store the user on the user service
-                this._userService.user = response;
-
+                this._userService.user = response; 
+                this.userData = response; 
                 // Return true
                 return of(true);
             })
@@ -165,7 +166,23 @@ export class AuthService
      */
     signUp(user: { fullName: string; email: string; password: string; }): Observable<User>
     {
-        return this._httpClient.post<User>(`${ this.url }auth/register`, user);
+        return this._httpClient.post<User>(`${ this.url }auth/register`, user).pipe(
+            switchMap((response: User) => {
+
+                // Store the access token in the local storage
+                this.accessToken = response.token;
+
+                // Set the authenticated flag to true
+                this._authenticated = true;
+
+                // Store the user on the user service
+                this._userService.user = response;
+
+                this.userData = response; 
+                // Return a new observable with the response
+                return of(response);
+            })
+        );
     }
 
     /**

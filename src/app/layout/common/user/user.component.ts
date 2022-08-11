@@ -48,7 +48,7 @@ export class UserComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((user: User) => {
                 this.user = user;
-
+                console.log(user)
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -93,6 +93,6 @@ export class UserComponent implements OnInit, OnDestroy
      */
     signOut(): void
     {
-        this._router.navigate(['/sign-out']);
+        this._userService.signOut();
     }
 }
