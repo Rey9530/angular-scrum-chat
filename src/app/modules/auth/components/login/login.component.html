@@ -24,12 +24,11 @@
             <!-- Content -->
             <div class="z-10 relative w-full max-w-2xl">
                 <div class="text-7xl font-bold leading-none text-gray-100">
-                    <div>Welcome to</div>
-                    <div>our community</div>
+                    <div>Bienvenido a</div>
+                    <div>nuestra comunidad</div>
                 </div>
                 <div class="mt-6 text-lg tracking-tight leading-6 text-gray-400">
-                    Fuse helps developers to build organized and well coded dashboards full of beautiful and rich modules.
-                    Join us and start building your application today.
+                    Ayuda a los desarrolladores a crear tableros organizados y bien codificados .
                 </div>
                 <div class="flex items-center mt-8">
                     <div class="flex flex-0 items-center -space-x-1.5">
@@ -50,7 +49,7 @@
                             class="flex-0 w-10 h-10 rounded-full ring-4 ring-offset-1 ring-gray-800 ring-offset-gray-800 object-cover"
                             src="assets/images/avatars/male-16.jpg">
                     </div>
-                    <div class="ml-4 font-medium tracking-tight text-gray-400">More than 17k people joined us, it's your turn</div>
+                    <div class="ml-4 font-medium tracking-tight text-gray-400"> Se parte de una gran comunidad</div>
                 </div>
             </div>
         </div>
@@ -62,12 +61,12 @@
                 </div>
 
                 <!-- Title -->
-                <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Sign in</div>
+                <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">Iniciar sesión</div>
                 <div class="flex items-baseline mt-0.5 font-medium">
-                    <div>Don't have an account?</div>
+                    <div>No tienenes cuenta?</div>
                     <a
                         class="ml-1 text-primary-500 hover:underline"
-                        [routerLink]="['/auth/register']">Sign up
+                        [routerLink]="['/auth/register']">Registro
                     </a>
                 </div>
 
@@ -91,23 +90,23 @@
 
                     <!-- Email field -->
                     <mat-form-field class="w-full">
-                        <mat-label>Email address</mat-label>
+                        <mat-label>Correo</mat-label>
                         <input
                             title="Data"
                             id="email"
                             matInput
                             [formControlName]="'email'">
                         <mat-error *ngIf="signInForm.get('email').hasError('required')">
-                            Email address is required
+                            Correo es requerido
                         </mat-error>
                         <mat-error *ngIf="signInForm.get('email').hasError('email')">
-                            Please enter a valid email address
+                            Por favor ingrese un Correo valido
                         </mat-error>
                     </mat-form-field>
 
                     <!-- Password field -->
                     <mat-form-field class="w-full">
-                        <mat-label>Password</mat-label>
+                        <mat-label>Contraseña</mat-label>
                         <input
                         title="Data"
                             id="password"
@@ -131,12 +130,12 @@
                                 [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
                         </button>
                         <mat-error>
-                            Password is required
+                            Contraseña es requida
                         </mat-error>
                     </mat-form-field>
 
                     <!-- Actions -->
-                    <div class="inline-flex items-end justify-between w-full mt-1.5">
+                    <!-- <div class="inline-flex items-end justify-between w-full mt-1.5">
                         <mat-checkbox
                             [color]="'primary'"
                             [formControlName]="'rememberMe'">
@@ -146,7 +145,7 @@
                             class="text-md font-medium text-primary-500 hover:underline"
                             [routerLink]="['/forgot-password']">Forgot password?
                         </a>
-                    </div>
+                    </div> -->
 
                     <!-- Submit button -->
                     <button
@@ -156,7 +155,7 @@
                         [color]="'primary'"
                         [disabled]="signInForm.disabled" >
                         <span *ngIf="!signInForm.disabled">
-                            Sign in
+                            Iniciar Sesión
                         </span>
                         <mat-progress-spinner
                             *ngIf="signInForm.disabled"
@@ -165,14 +164,14 @@
                     </button>
 
                     <!-- Separator -->
-                    <div class="flex items-center mt-8">
+                    <!-- <div class="flex items-center mt-8">
                         <div class="flex-auto mt-px border-t"></div>
                         <div class="mx-2 text-secondary">Or continue with</div>
                         <div class="flex-auto mt-px border-t"></div>
-                    </div>
+                    </div> -->
 
                     <!-- Single sign-on buttons -->
-                    <div class="flex items-center mt-8 space-x-4">
+                    <!-- <div class="flex items-center mt-8 space-x-4">
                         <button
                         title="Data"
                             class="flex-auto"
@@ -200,7 +199,7 @@
                                 class="icon-size-5"
                                 [svgIcon]="'feather:github'"></mat-icon>
                         </button>
-                    </div>
+                    </div> -->
                 </form>
             </div>
         </div>
