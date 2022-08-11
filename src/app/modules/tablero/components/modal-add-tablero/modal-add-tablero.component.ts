@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ScrumboardCardDetailsComponent } from './details/details.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ModalTableroComponent } from './modal-tablero/modal-tablero.component'; 
+import { ActivatedRoute, Router } from '@angular/router'; 
 
 @Component({
-    selector       : 'scrumboard-card',
-    templateUrl    : './card.component.html',
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-modal-add-tablero',
+  templateUrl: './modal-add-tablero.component.html',
+  encapsulation  : ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ScrumboardCardComponent implements OnInit
+export class ModalAddTableroComponent implements OnInit
 {
     /**
      * Constructor
@@ -30,14 +30,14 @@ export class ScrumboardCardComponent implements OnInit
      * On init
      */
     ngOnInit(): void
-    {
+    {   
         // Launch the modal
-        this._matDialog.open(ScrumboardCardDetailsComponent, {autoFocus: false})
+        this._matDialog.open(ModalTableroComponent, {autoFocus: true})
             .afterClosed()
-            .subscribe(() => {
-                console.log(this._activatedRoute)
-                // Go up twice because card routes are setup like this; "card/CARD_ID"
-                this._router.navigate(['./../..'], {relativeTo: this._activatedRoute});
+            .subscribe(() => {  
+                this._router.navigate(['/tablero/index'], {relativeTo: this._activatedRoute});
             });
     }
 }
+
+

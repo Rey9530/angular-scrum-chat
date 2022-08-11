@@ -10,7 +10,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 export class ScrumboardBoardAddListComponent implements OnInit
 {
     @ViewChild('titleInput') titleInput: ElementRef;
-    @Input() buttonTitle: string = 'Add a list';
+    @Input() buttonTitle: string = 'Agregar';
     @Output() readonly saved: EventEmitter<string> = new EventEmitter<string>();
 
     form: UntypedFormGroup;

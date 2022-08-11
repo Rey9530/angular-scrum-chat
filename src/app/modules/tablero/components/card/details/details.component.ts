@@ -86,16 +86,14 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy
         // Update card when there is a value change on the card form
         this.cardForm.valueChanges
             .pipe(
-                tap((value) => {
-
+                tap((value) => { 
                     // Update the card object
                     this.card = assign(this.card, value);
                 }),
-                debounceTime(300),
+                debounceTime(1000),
                 takeUntil(this._unsubscribeAll)
             )
-            .subscribe((value) => {
-
+            .subscribe((value) => { 
                 // Update the card on the server
                 this._scrumboardService.updateCard(value.id, value).subscribe();
 

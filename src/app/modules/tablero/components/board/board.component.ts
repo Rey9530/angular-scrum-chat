@@ -21,7 +21,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
     listTitleForm: UntypedFormGroup;
 
     // Private
-    private readonly _positionStep: number = 65536;
+    private readonly _positionStep: number = 0;
     private readonly _maxListCount: number = 200;
     private readonly _maxPosition: number = this._positionStep * 500;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -98,16 +98,15 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
     addList(title: string): void
     {
         // Limit the max list count
-        if ( this.board.lists.length >= this._maxListCount )
+        if ( this.board.lista.length >= this._maxListCount )
         {
             return;
         }
 
         // Create a new list model
-        const list = new List({
-            boardId : this.board.id,
-            position: this.board.lists.length ? this.board.lists[this.board.lists.length - 1].position + this._positionStep : this._positionStep,
-            title   : title
+        const list = new List({ 
+            position: this.board.lista.length ? this.board.lista.length + 1 : 1,
+            descripcion:title
         });
 
         // Save the list
@@ -121,7 +120,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
      * @param list
      */
     updateListTitle(event: any, list: List): void
-    {
+    {   
         // Get the target element
         const element: HTMLInputElement = event.target;
 
@@ -132,13 +131,17 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
         if ( !newTitle || newTitle.trim() === '' )
         {
             // Reset to original title and return
-            element.value = list.title;
+            element.value = list.descripcion;
             return;
         }
-
         // Update the list title and element value
-        list.title = element.value = newTitle.trim();
+        list.descripcion = element.value = newTitle.trim();
 
+
+        // console.log(event)
+        // console.log(list)
+        // console.log(newTitle)
+        // return ;
         // Update the list
         this._scrumboardService.updateList(list).subscribe();
     }
@@ -152,11 +155,11 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
     {
         // Open the confirmation dialog
         const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete list',
-            message: 'Are you sure you want to delete this list and its cards? This action cannot be undone!',
+            title  : 'Eliminar List',
+            message: '¿Está seguro de que desea eliminar esta lista y sus tarjetas? ¡Esta acción no se puede deshacer!',
             actions: {
                 confirm: {
-                    label: 'Delete'
+                    label: 'Eliminar'
                 }
             }
         });
@@ -166,8 +169,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
 
             // If the confirm button pressed...
             if ( result === 'confirmed' )
-            {
-
+            { 
                 // Delete the list
                 this._scrumboardService.deleteList(id).subscribe();
             }
@@ -178,14 +180,14 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
      * Add new card
      */
     addCard(list: List, title: string): void
-    {
+    {  
         // Create a new card model
-        const card = new Card({
+        const card:any = {
             boardId : this.board.id,
             listId  : list.id,
-            position: list.cards.length ? list.cards[list.cards.length - 1].position + this._positionStep : this._positionStep,
+            position: list.cards.length +1 ,
             title   : title
-        });
+        }; 
 
         // Save the card
         this._scrumboardService.createCard(card).subscribe();
@@ -228,13 +230,17 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy
 
             // Update the card's list it
             event.container.data[event.currentIndex].listId = event.container.id;
+            
+            const idCard:string = event.container.data[event.currentIndex].id;
+            const idList: string = event.container.id; 
+    
+            // Calculate the positions
+            const updated = this._calculatePositions(event); 
+
+            // Update the cards
+            // this._scrumboardService.updateCards(updated).subscribe();
+            this._scrumboardService.moveCard(idCard,idList).subscribe();
         }
-
-        // Calculate the positions
-        const updated = this._calculatePositions(event);
-
-        // Update the cards
-        this._scrumboardService.updateCards(updated).subscribe();
     }
 
     /**

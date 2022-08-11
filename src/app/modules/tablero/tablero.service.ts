@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, switchMap, take, tap, throwError, debounceTime } from 'rxjs';
 import { Board, Card, Label, List } from './tablero.models';
+import { environment } from 'environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
     providedIn: 'root'
@@ -12,12 +14,14 @@ export class ScrumboardService
     private _board: BehaviorSubject<Board | null>;
     private _boards: BehaviorSubject<Board[] | null>;
     private _card: BehaviorSubject<Card | null>;
+    private url = environment.base_url;
 
     /**
      * Constructor
      */
     constructor(
-        private _httpClient: HttpClient
+        private _httpClient: HttpClient,
+        private _snackBar: MatSnackBar
     )
     {
         // Set the private defaults
@@ -63,8 +67,10 @@ export class ScrumboardService
      */
     getBoards(): Observable<Board[]>
     {
-        return this._httpClient.get<Board[]>('api/apps/scrumboard/boards').pipe(
-            map(response => response.map(item => new Board(item))),
+        return this._httpClient.get<Board[]>(`${this.url}tableros`).pipe(
+            map(response => { 
+                return response.map(item => new Board(item))
+            }),
             tap(boards => this._boards.next(boards))
         );
     }
@@ -76,8 +82,16 @@ export class ScrumboardService
      */
     getBoard(id: string): Observable<Board>
     {
-        return this._httpClient.get<Board>('api/apps/scrumboard/board', {params: {id}}).pipe(
-            map(response => new Board(response)),
+        return this._httpClient.get<Board>(`${this.url}tableros/${id}`,).pipe(
+            map(response => {
+                response.lista.map((e)=>{
+                    return e.cards.map(el=>{
+                        el.position= Number(el.position)
+                        return el
+                    })
+                }); 
+                return new Board(response)
+            }),
             tap(board => this._board.next(board))
         );
     }
@@ -87,13 +101,12 @@ export class ScrumboardService
      *
      * @param board
      */
-    createBoard(board: Board): Observable<Board>
+    createBoard(board: {title:string,description:string,icon:string}): Observable<Board>
     {
         return this.boards$.pipe(
             take(1),
-            switchMap(boards => this._httpClient.put<Board>('api/apps/scrumboard/board', {board}).pipe(
-                map((newBoard) => {
-
+            switchMap(boards => this._httpClient.post<Board>(`${this.url}tableros`, board).pipe(
+                map((newBoard) => { 
                     // Update the boards with the new board
                     this._boards.next([...boards, newBoard]);
 
@@ -176,19 +189,21 @@ export class ScrumboardService
      * @param list
      */
     createList(list: List): Observable<List>
-    {
-        return this._httpClient.post<List>('api/apps/scrumboard/board/list', {list}).pipe(
-            map(response => new List(response)),
-            tap((newList) => {
-
+    {  
+        return this._httpClient.post<List>(`${this.url}tableros/listas/${this._board.value.id}`, {descripcion:list.descripcion, position:list.position}).pipe(
+            //TODO: DESCOMENTAR
+            // map(response => new List(response)),
+            tap((newList:List) => {
+                //TODO: que venga de API
+                newList.cards=[];
+                this.openSnackBar(newList.descripcion+' fue creada con exito');
                 // Get the board value
                 const board = this._board.value;
-
                 // Update the board lists with the new list
-                board.lists = [...board.lists, newList];
+                board.lista = [...board.lista, newList];
 
                 // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
+                board.lista.sort((a, b) => a.position - b.position);
 
                 // Update the board
                 this._board.next(board);
@@ -202,22 +217,24 @@ export class ScrumboardService
      * @param list
      */
     updateList(list: List): Observable<List>
-    {
-        return this._httpClient.patch<List>('api/apps/scrumboard/board/list', {list}).pipe(
-            map(response => new List(response)),
+    { 
+        return this._httpClient.put<List>(`${this.url}tableros/listas/${list.id}`, {descripcion:list.descripcion, position:Number(list.position)}).pipe(
+            //TODO: DESCOMENTAR
+            // map(response => new List(response)),
             tap((updatedList) => {
-
+                this.openSnackBar('Actualizado con exito');
+                updatedList.cards = [];
                 // Get the board value
                 const board = this._board.value;
 
                 // Find the index of the updated list
-                const index = board.lists.findIndex(item => item.id === list.id);
+                const index = board.lista.findIndex(item => item.id === list.id);
 
                 // Update the list
-                board.lists[index] = updatedList;
+                board.lista[index] = updatedList;
 
                 // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
+                board.lista.sort((a, b) => a.position - b.position);
 
                 // Update the board
                 this._board.next(board);
@@ -233,7 +250,8 @@ export class ScrumboardService
     updateLists(lists: List[]): Observable<List[]>
     {
         return this._httpClient.patch<List[]>('api/apps/scrumboard/board/lists', {lists}).pipe(
-            map(response => response.map(item => new List(item))),
+            //TODO: DESCOMENTAR
+            // map(response => response.map(item => new List(item))),
             tap((updatedLists) => {
 
                 // Get the board value
@@ -243,14 +261,14 @@ export class ScrumboardService
                 updatedLists.forEach((updatedList) => {
 
                     // Find the index of the updated list
-                    const index = board.lists.findIndex(item => item.id === updatedList.id);
+                    const index = board.lista.findIndex(item => item.id === updatedList.id);
 
                     // Update the list
-                    board.lists[index] = updatedList;
+                    board.lista[index] = updatedList;
                 });
 
                 // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
+                board.lista.sort((a, b) => a.position - b.position);
 
                 // Update the board
                 this._board.next(board);
@@ -265,38 +283,50 @@ export class ScrumboardService
      */
     deleteList(id: string): Observable<boolean>
     {
-        return this._httpClient.delete<boolean>('api/apps/scrumboard/board/list', {params: {id}}).pipe(
-            tap((isDeleted) => {
+        return this._httpClient.delete<any>(`${this.url}tableros/listas/${id}`).pipe(
+            tap((isDeleted) => { 
+                if(isDeleted.statusCode==200){
+                    this.openSnackBar('Eliminado con exito');
+                    // Get the board value
+                    const board = this._board.value;
+    
+                    // Find the index of the deleted list
+                    const index = board.lista.findIndex(item => item.id === id);
+    
+                    // Delete the list
+                    board.lista.splice(index, 1);
+    
+                    // Sort the board lists
+                    board.lista.sort((a, b) => a.position - b.position);
+    
+                    // Update the board
+                    this._board.next(board);
 
-                // Get the board value
-                const board = this._board.value;
-
-                // Find the index of the deleted list
-                const index = board.lists.findIndex(item => item.id === id);
-
-                // Delete the list
-                board.lists.splice(index, 1);
-
-                // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
-
-                // Update the board
-                this._board.next(board);
+                }
             })
         );
     }
 
+    openSnackBar(msg:string) {
+        this._snackBar.open(msg, 'X', {
+            duration:2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['mat-toolbar', 'mat-primary'],
+        });
+      }
+
     /**
      * Get card
      */
-    getCard(id: string): Observable<Card>
+    getCard(id: string):any // Observable<Card>
     {
         return this._board.pipe(
             take(1),
             map((board) => {
 
                 // Find the card
-                const card = board.lists.find(list => list.cards.some(item => item.id === id))
+                const card:any = board.lista.find(list => list.cards.some(item => item.id === id))
                                   .cards.find(item => item.id === id);
 
                 // Update the card
@@ -323,16 +353,18 @@ export class ScrumboardService
      * @param card
      */
     createCard(card: Card): Observable<Card>
-    {
-        return this._httpClient.put<Card>('api/apps/scrumboard/board/card', {card}).pipe(
+    { 
+        let data = {  title:card.title,position: card.position  }
+        return this._httpClient.post<Card>(`${this.url}tableros/cards/${card.listId}`, data).pipe(
             map(response => new Card(response)),
             tap((newCard) => {
-
+                
+                newCard = Object.assign(card,newCard)
                 // Get the board value
                 const board = this._board.value;
 
                 // Find the list and push the new card in it
-                board.lists.forEach((listItem, index, list) => {
+                board.lista.forEach((listItem, index, list) => {
                     if ( listItem.id === newCard.listId )
                     {
                         list[index].cards.push(newCard);
@@ -356,16 +388,17 @@ export class ScrumboardService
      */
     updateCard(id: string, card: Card): Observable<Card>
     {
+        delete card.id;
+        delete card.labels;
         return this.board$.pipe(
             take(1),
-            switchMap(board => this._httpClient.patch<Card>('api/apps/scrumboard/board/card', {
-                id,
-                card
+            switchMap(board => this._httpClient.put<any>(`${this.url}tableros/cards/${id}`, {
+                ...card
             }).pipe(
-                map((updatedCard) => {
-
+                map((updatedCard) => { 
+                    updatedCard.labels=[];
                     // Find the card and update it
-                    board.lists.forEach((listItem) => {
+                    board.lista.forEach((listItem) => {
                         listItem.cards.forEach((cardItem, index, array) => {
                             if ( cardItem.id === id )
                             {
@@ -379,7 +412,8 @@ export class ScrumboardService
 
                     // Update the card
                     this._card.next(updatedCard);
-
+                    
+                    this.openSnackBar('Actualizado con exito con exito');
                     // Return the updated card
                     return updatedCard;
                 })
@@ -405,16 +439,16 @@ export class ScrumboardService
                 updatedCards.forEach((updatedCard) => {
 
                     // Find the index of the updated card's list
-                    const listIndex = board.lists.findIndex(list => list.id === updatedCard.listId);
+                    const listIndex = board.lista.findIndex(list => list.id === updatedCard.listId);
 
                     // Find the index of the updated card
-                    const cardIndex = board.lists[listIndex].cards.findIndex(item => item.id === updatedCard.id);
+                    const cardIndex = board.lista[listIndex].cards.findIndex(item => item.id === updatedCard.id);
 
                     // Update the card
-                    board.lists[listIndex].cards[cardIndex] = updatedCard;
+                    board.lista[listIndex].cards[cardIndex] = updatedCard;
 
                     // Sort the cards
-                    board.lists[listIndex].cards.sort((a, b) => a.position - b.position);
+                    board.lista[listIndex].cards.sort((a, b) => a.position - b.position);
                 });
 
                 // Update the board
@@ -422,6 +456,46 @@ export class ScrumboardService
             })
         );
     }
+
+    
+    /**
+     * Update the cards
+     *
+     * @param cards
+     */
+     moveCard(id_card:string,id_list:string): Observable<any>
+     {
+        const data = { 
+            id_list,id_card
+        }
+         return this._httpClient.put(`${this.url}tableros/move_cards`,data).pipe(
+            //  map(response => response.map(item => new Card(item))),
+             tap((updatedCards) => {
+ 
+                 // Get the board value
+                 const board = this._board.value;
+                 this.openSnackBar('Exito');
+                 // Go through the updated cards
+                /* updatedCards.forEach((updatedCard) => {
+ 
+                     // Find the index of the updated card's list
+                     const listIndex = board.lista.findIndex(list => list.id === updatedCard.listId);
+ 
+                     // Find the index of the updated card
+                     const cardIndex = board.lista[listIndex].cards.findIndex(item => item.id === updatedCard.id);
+ 
+                     // Update the card
+                     board.lista[listIndex].cards[cardIndex] = updatedCard;
+ 
+                     // Sort the cards
+                     board.lista[listIndex].cards.sort((a, b) => a.position - b.position);
+                 });*/
+ 
+                 // Update the board
+                 this._board.next(board);
+             })
+         );
+     }
 
     /**
      * Delete the card
@@ -436,7 +510,7 @@ export class ScrumboardService
                 map((isDeleted: boolean) => {
 
                     // Find the card and delete it
-                    board.lists.forEach((listItem) => {
+                    board.lista.forEach((listItem) => {
                         listItem.cards.forEach((cardItem, index, array) => {
                             if ( cardItem.id === id )
                             {
@@ -473,7 +547,7 @@ export class ScrumboardService
                 const board = this._board.value;
 
                 // Find the card and update it
-                board.lists.forEach((listItem) => {
+                board.lista.forEach((listItem) => {
                     listItem.cards.forEach((cardItem, index, array) => {
                         if ( cardItem.id === id )
                         {
@@ -483,10 +557,10 @@ export class ScrumboardService
                 });
 
                 // Update the lists
-                board.lists = updatedLists;
+                board.lista = updatedLists;
 
                 // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
+                board.lista.sort((a, b) => a.position - b.position);
 
                 // Update the board
                 this._board.next(board);
@@ -527,6 +601,7 @@ export class ScrumboardService
      */
     updateLabel(id: string, label: Label): Observable<Label>
     {
+        console.log(label)
         return this.board$.pipe(
             take(1),
             switchMap(board => this._httpClient.patch<Label>('api/apps/scrumboard/board/label', {
@@ -573,7 +648,7 @@ export class ScrumboardService
                     if ( isDeleted )
                     {
                         // Remove the label from any card that uses it
-                        board.lists.forEach((list) => {
+                        board.lista.forEach((list) => {
                             list.cards.forEach((card) => {
                                 const labelIndex = card.labels.findIndex(label => label.id === id);
                                 if ( labelIndex > -1 )

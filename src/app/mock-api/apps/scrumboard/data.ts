@@ -4,7 +4,7 @@ import * as moment from 'moment';
 export const boards = [
     {
         id          : '2c82225f-2a6c-45d3-b18a-1132712a4234',
-        title       : 'Admin Dashboard',
+        title       : 'Admin Dashboard --',
         description : 'Roadmap for the new project',
         icon        : 'heroicons_outline:template',
         lastActivity: moment().startOf('day').subtract(1, 'day').toISOString(),

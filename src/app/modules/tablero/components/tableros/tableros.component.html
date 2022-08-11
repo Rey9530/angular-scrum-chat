@@ -52,7 +52,7 @@
                 </a>
             </ng-container>
             <!-- New board -->
-            <div class="flex flex-col items-center justify-center w-56 rounded-lg cursor-pointer border-2 border-gray-300 border-dashed hover:bg-hover transition-colors duration-150 ease-in-out">
+            <div (click)="modal_add_tablero(modal_tablero)" class="flex flex-col items-center justify-center w-56 rounded-lg cursor-pointer border-2 border-gray-300 border-dashed hover:bg-hover transition-colors duration-150 ease-in-out">
                 <mat-icon
                     class="icon-size-12 text-hint"
                     [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -62,5 +62,60 @@
     </div>
 
 </div>
+
+
+<ng-template #modal_tablero let-modal >
+    <div class="flex flex-col flex-auto md:w-160 md:min-w-160 max-h-160 -m-6 overflow-y-auto">
+
+        <!-- Header -->
+        <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
+            <div class="text-lg font-medium">Agregar Tablero </div>
+            <button
+                mat-icon-button
+                (click)="cerrar_modal()"
+                [tabIndex]="-1">
+                <mat-icon
+                    class="text-current"
+                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+            </button>
+        </div>
+    
+        <!-- Card form -->
+        <form
+            class="flex flex-col flex-0 items-start w-full p-6 sm:p-8 space-y-6 overflow-y-auto"
+            [formGroup]="cardForm">
+    
+            <!-- Title -->
+            <mat-form-field class="fuse-mat-textarea fuse-mat-no-subscript w-full">
+                <mat-label>Titulo</mat-label>
+                <textarea
+                    matInput
+                    [formControlName]="'title'"
+                    [rows]="1"
+                    cdkTextareaAutosize
+                    [cdkAutosizeMinRows]="1">
+                </textarea>
+            </mat-form-field>
+    
+            <!-- Description -->
+            <mat-form-field class="fuse-mat-textarea fuse-mat-no-subscript w-full">
+                <mat-label>Descripcion</mat-label>
+                <textarea
+                    matInput
+                    [formControlName]="'description'"
+                    [rows]="1"
+                    cdkTextareaAutosize
+                    [cdkAutosizeMinRows]="1">
+                </textarea>
+            </mat-form-field> 
+        </form>
+        
+        <div class="flex flex-col flex-0 items-end  p-6   sm:flex-row flex-0 sm:items-center sm:justify-between  "> 
+            <button mat-raised-button color="danger"  (click)="cerrar_modal()" >Cerrar</button>
+            <button mat-raised-button color="primary" (click)="guadar_tablero()"  >Guardar</button>
+        </div>
+    </div>
+    
+</ng-template>
 
 

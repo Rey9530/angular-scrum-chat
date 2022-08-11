@@ -38,7 +38,7 @@
         <div
             class="flex"
             cdkDropList
-            [cdkDropListData]="board.lists"
+            [cdkDropListData]="board.lista"
             [cdkDropListOrientation]="'horizontal'"
             (cdkDropListDropped)="listDropped($event)">
 
@@ -48,7 +48,7 @@
                 cdkDropListGroup>
 
                 <!-- List -->
-                <ng-container *ngFor="let list of board.lists; trackBy: trackByFn">
+                <ng-container *ngFor="let list of board.lista; trackBy: trackByFn">
                     <div
                         class="flex-0 w-72 p-2 rounded-2xl bg-default"
                         cdkDrag
@@ -61,7 +61,7 @@
                                 <input
                                     class="w-full font-medium leading-5 bg-transparent"
                                     [spellcheck]="'false'"
-                                    [value]="list.title"
+                                    [value]="list.descripcion"
                                     (focusout)="updateListTitle($event, list)"
                                     (keydown.enter)="listTitleInput.blur()"
                                     #listTitleInput>
@@ -85,7 +85,7 @@
                                         <mat-icon
                                             class="icon-size-5"
                                             [svgIcon]="'heroicons_solid:pencil-alt'"></mat-icon>
-                                        Rename list
+                                        Renombrar
                                     </button>
                                     <button
                                         mat-menu-item
@@ -93,7 +93,7 @@
                                         <mat-icon
                                             class="icon-size-5"
                                             [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                        Delete list
+                                        Eliminar
                                     </button>
                                 </mat-menu>
                             </div>
@@ -156,7 +156,7 @@
                             <!-- New card -->
                             <scrumboard-board-add-card
                                 (saved)="addCard(list, $event)"
-                                [buttonTitle]="list.cards.length ? 'Add another card' : 'Add a card'">
+                                [buttonTitle]="list.cards.length ? 'Agregar otra Tarea' : 'Agregar una Tarea'">
                             </scrumboard-board-add-card>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                 <!-- New list -->
                 <scrumboard-board-add-list
                     (saved)="addList($event)"
-                    [buttonTitle]="board.lists.length ? 'Add another list' : 'Add a list'">
+                    [buttonTitle]="board.lista.length ? 'Agregar otra lista' : 'Agregar lista'">
                 </scrumboard-board-add-list>
 
             </div>

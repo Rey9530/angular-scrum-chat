@@ -5,24 +5,25 @@ import { TablerosComponent } from './components/tableros/tableros.component';
 import { ScrumboardBoardsResolver, ScrumboardBoardResolver, ScrumboardCardResolver } from './tablero.resolvers';
 import { ScrumboardBoardComponent } from './components/board/board.component';
 import { ScrumboardCardComponent } from './components/card/card.component';
+import { ModalAddTableroComponent } from './components/modal-add-tablero/modal-add-tablero.component';
  
 export const authRoutes: Route[] = [
   
     {
         path:'index',
-        component:IndexComponent,
+        component:TablerosComponent,
         resolve  : {
             boards: ScrumboardBoardsResolver
         },
-        children:[
+        children:[ 
             {
-                path:'',
-                component:TablerosComponent
-            }, 
+                path     : 'ModalAdd',
+                component: ModalAddTableroComponent, 
+            }
         ]
     },
     {
-        path     : ':boardId',
+        path     : 'index/:boardId',
         component: ScrumboardBoardComponent,
         resolve  : {
             board: ScrumboardBoardResolver

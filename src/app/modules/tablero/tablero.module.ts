@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button'; 
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
@@ -25,6 +25,8 @@ import { ScrumboardBoardAddCardComponent } from './components/board/add-card/add
 import { ScrumboardBoardAddListComponent } from './components/board/add-list/add-list.component';
 import { ScrumboardCardComponent } from './components/card/card.component';
 import { ScrumboardCardDetailsComponent } from './components/card/details/details.component';
+import { ModalAddTableroComponent } from './components/modal-add-tablero/modal-add-tablero.component'; 
+import { ModalTableroComponent } from './components/modal-add-tablero/modal-tablero/modal-tablero.component';
 
 
 
@@ -38,7 +40,9 @@ import { ScrumboardCardDetailsComponent } from './components/card/details/detail
     ScrumboardBoardAddCardComponent,
     ScrumboardBoardAddListComponent,
     ScrumboardCardComponent,
-    ScrumboardCardDetailsComponent
+    ScrumboardCardDetailsComponent,
+    ModalAddTableroComponent,
+    ModalTableroComponent
   ],
   imports: [ 
     TableroRoutes,

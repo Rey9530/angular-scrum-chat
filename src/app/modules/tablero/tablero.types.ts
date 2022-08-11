@@ -5,27 +5,26 @@ export interface IBoard
     description?: string | null;
     icon?: string | null;
     lastActivity?: string | null;
-    lists?: IList[];
+    lista?: IList[];
     labels?: ILabel[];
     members?: IMember[];
 }
 
 export interface IList
 {
-    id?: string | null;
-    boardId: string;
-    position: number;
-    title: string;
+    id: string; 
+    position?: number;
+    descripcion: string;
     cards?: ICard[];
 }
 
 export interface ICard
 {
     id?: string | null;
-    boardId: string;
-    listId: string;
-    position: number;
-    title: string;
+    boardId?: string | null;
+    listId?: string;
+    position?: number;
+    title?: string;
     description?: string | null;
     labels?: ILabel[];
     dueDate?: string | null;
@@ -33,10 +32,15 @@ export interface ICard
 
 export interface IMember
 {
-    id?: string | null;
-    name: string;
-    avatar?: string | null;
+    id:       string;
+    email:    string;
+    fullName: string;
+    isActive: boolean;
+    roles:    string[];
+    avatar:   string | null;
 }
+ 
+
 
 export interface ILabel
 {

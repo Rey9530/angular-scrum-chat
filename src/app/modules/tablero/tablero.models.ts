@@ -9,7 +9,7 @@ export class Board implements Required<IBoard>
     description: string | null;
     icon: string | null;
     lastActivity: string | null;
-    lists: List[];
+    lista: IList[];
     labels: Label[];
     members: Member[];
 
@@ -23,14 +23,13 @@ export class Board implements Required<IBoard>
         this.description = board.description || null;
         this.icon = board.icon || null;
         this.lastActivity = board.lastActivity || null;
-        this.lists = [];
+        this.lista = [];
         this.labels = [];
-        this.members = [];
-
-        // Lists
-        if ( board.lists )
+        this.members = []; 
+        // Lists 
+        if ( board.lista )
         {
-            this.lists = board.lists.map((list) => {
+            this.lista = board.lista.map((list) => {
                 if ( !(list instanceof List) )
                 {
                     return new List(list);
@@ -71,23 +70,20 @@ export class Board implements Required<IBoard>
 // -----------------------------------------------------------------------------------------------------
 // @ List
 // -----------------------------------------------------------------------------------------------------
-export class List implements Required<IList>
+export class List //implements Required<IList>
 {
-    id: string | null;
-    boardId: string;
-    position: number;
-    title: string;
-    cards: Card[];
-
+    id: string; 
+    position?: number;
+    descripcion: string;
+    cards?: ICard[];
     /**
      * Constructor
      */
-    constructor(list: IList)
+    constructor(list: any)
     {
-        this.id = list.id || null;
-        this.boardId = list.boardId;
+        this.id = list.id; 
         this.position = list.position;
-        this.title = list.title;
+        this.descripcion = list.descripcion;
         this.cards = [];
 
         // Cards
@@ -108,11 +104,11 @@ export class List implements Required<IList>
 // -----------------------------------------------------------------------------------------------------
 // @ Card
 // -----------------------------------------------------------------------------------------------------
-export class Card implements Required<ICard>
+export class Card //implements Required<ICard>
 {
     id: string | null;
-    boardId: string;
-    listId: string;
+    boardId?: string;
+    listId?: string;
     position: number;
     title: string;
     description: string | null;
@@ -125,8 +121,8 @@ export class Card implements Required<ICard>
     constructor(card: ICard)
     {
         this.id = card.id || null;
-        this.boardId = card.boardId;
-        this.listId = card.listId;
+        // this.boardId = card.boardId;
+        // this.listId = card.listId;
         this.position = card.position;
         this.title = card.title;
         this.description = card.description || null;
@@ -153,9 +149,12 @@ export class Card implements Required<ICard>
 // -----------------------------------------------------------------------------------------------------
 export class Member implements Required<IMember>
 {
-    id: string | null;
-    name: string;
-    avatar: string | null;
+    id:       string;
+    email:    string;
+    fullName: string;
+    isActive: boolean;
+    roles:    string[];
+    avatar:   string | null;
 
     /**
      * Constructor
@@ -163,7 +162,7 @@ export class Member implements Required<IMember>
     constructor(member: IMember)
     {
         this.id = member.id || null;
-        this.name = member.name;
+        this.fullName = member.fullName;
         this.avatar = member.avatar || null;
     }
 }
