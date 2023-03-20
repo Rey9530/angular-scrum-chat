@@ -12,7 +12,7 @@ import { NoAuthGuard } from './core/auth/guards/noAuth.guard';
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export const appRoutes: Route[] = [
  
-    {path: '', pathMatch : 'full', redirectTo: 'tablero/index'},  
+    {path: '', pathMatch : 'full', redirectTo: 'tablero/index'},   
 
     // Auth routes for guests
     {
@@ -22,8 +22,7 @@ export const appRoutes: Route[] = [
         component: LayoutComponent,
         data: {layout: 'empty' },
         loadChildren: () => import('./modules/auth/auth.module').then( a => a.AuthModule ) 
-    },
-
+    }, 
     // Auth routes for authenticated users
     {
         path: 'tablero',
